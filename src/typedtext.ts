@@ -8,7 +8,7 @@ Copyright (C) Philippe Braum (www.pbr.plus)
 Available under the Apache 2.0 license
 */
 
-const typedtextVersionId = "0.1.2:122022";
+const typedtextjsVersionId = "0.1.2:122022";
 
 const defaultOptions = {
     /**
@@ -40,6 +40,11 @@ const defaultOptions = {
      * @property {boolean} true: cursor blinks even when typing
      */
     permaBlink: false,
+
+    /**
+     * @property {boolean} true: cursor does not blink at any time
+     */
+    staticCursor: false,
 
     /**
      * @property {number} time interval cursor blinking in seconds
@@ -94,66 +99,83 @@ const defaultOptions = {
 const contentObj = {
     text: "default", // required
     // ...optionalArgs
-    color: "black",
-    cursor: "|",
-    corsorColor: "black",
-    timeout: 1000,
-    // ...
+    color: "black", // optional: font color
+    cursor: "|", // optional: cursor for individual word
+    cursorColor: "blue", // optional: cursor color for word
+    timeout: 2000 // optional: (additional to delayAfter) timeout after word has been typed
 };
 
 class Typedtext {
-    readonly config: any;
-
     readonly elmSent: HTMLSpanElement;
     readonly elmCurs: HTMLSpanElement;
     readonly cursor: string;
+    readonly cursorColor: string;
+    readonly textColor: string;
     readonly permaBlink: boolean;
+    readonly staticCursor: boolean;
     readonly blink: string;
     readonly content: any[];
     readonly delay: number;
     readonly delayAfter: number;
     readonly varSpeed: boolean;
+    readonly underline: boolean;
 
     constructor(
             options = {} // optional configurations passed in as dictionary
         ) {
-        this.config = {...defaultOptions, ...options};
+        
+        const config = {...defaultOptions, ...options};
 
-        if (this.config.printConfig === true) {
-            this.printConfig();
+        if (config.printConfig === true) {
+            this.printConfig(config);
+        }
+
+        // check that only one option of permaBlink or staticCursor is set
+        if (config.permaBlink && config.staticCursor) {
+            throw "Typedtext.js: Cannot set both {permaBlink: true, staticCursor: true}. Select one.";
         }
 
         // sentence element
-        this.elmSent = <HTMLSpanElement>document.getElementById(this.config.elementSentenceId);
+        this.elmSent = <HTMLSpanElement>document.getElementById(config.elementSentenceId);
         // cursor element
-        this.elmCurs = <HTMLSpanElement>document.getElementById(this.config.elementCursorId);
+        this.elmCurs = <HTMLSpanElement>document.getElementById(config.elementCursorId);
         // cursor symbol
-        this.cursor = this.config.cursor;
-        this.permaBlink = this.config.permaBlink;
-        this.blink = `blink ${this.config.blinkSpeed}s linear infinite alternate`;
-        // add css to elements
-        // TODO autostyle on/off feature
-        this.styleElements();
-        // set global cursor
-        this.elmCurs.innerHTML = this.cursor;
+        this.cursor = config.cursor;
+        this.cursorColor = config.cursorColor;
+        this.textColor = config.textColor;
+        this.permaBlink = config.permaBlink;
+        this.staticCursor = config.staticCursor;
         // word(s)/sentence(s) to type optionally incl. indiv. config
-        this.content = this.config.content;
+        this.content = config.content;
         // delay between chars in ms
-        this.delay = this.config.delay;
+        this.delay = config.delay;
         // delay before deletion animation starts
-        this.delayAfter = this.config.delayAfter;
+        this.delayAfter = config.delayAfter;
         // varying typing speed
-        this.varSpeed = this.config.varSpeed;
+        this.varSpeed = config.varSpeed;
+        // always underline text
+        this.underline = config.underline;
+
+        // set blink animation style
+        this.blink = `blink ${config.blinkSpeed}s linear infinite alternate`;
+
+        // add css & content (e.g. cursor) to elements
+        // TODO autostyle on/off feature
+        this.setupElements(config);
 
         // autoRun
-        if (this.config.autoRun) {
+        if (config.autoRun) {
             this.run();
         }
     }
 
-    protected styleElements(): void {
+    static getVersion() {
+        return typedtextjsVersionId;
+    }
+
+    protected setupElements(config: typeof defaultOptions): void {
         if (!this.elmSent || !this.elmCurs) {
-            throw `Typedtext target element(s) not found:
+            throw `Typedtext.js: target element(s) not found;
                 sentence: ${this.elmSent},
                 cursor: ${this.elmCurs}`;
         }
@@ -163,8 +185,8 @@ class Typedtext {
         //this.elmSent.style.justifyContent = "center";
         //this.elmSent.style.alignItems = "center";
         //this.elmSent.style.height = "2rem"
-        this.elmSent.style.color = this.config.textColor;
-        if (this.config.underline) {
+        this.elmSent.style.color = config.textColor;
+        if (this.underline) {
             this.elmSent.style.textDecoration = "underline";
         }
 
@@ -174,10 +196,13 @@ class Typedtext {
         //this.elmCurs.style.alignItems = "center";
         //this.elmCurs.style.width = "2px";
         //this.elmCurs.style.height = "2rem"
-        this.elmCurs.style.color = this.config.textColor;
+        this.elmCurs.style.color = config.textColor;
         this.elmCurs.style.backgroundColor = "white";
         //this.elmCurs.style.marginLeft = "8px";
         this.elmCurs.style.animation = this.blink;
+
+        // set global cursor
+        this.elmCurs.innerHTML = this.cursor;
     }
 
     protected async type(content: typeof contentObj) {
@@ -192,7 +217,7 @@ class Typedtext {
             this.elmCurs.innerHTML = content.cursor;
         }
         if ("cursorColor" in content) {
-            this.elmCurs.style.color = <string>content.cursorColor;
+            this.elmCurs.style.color = content.cursorColor;
         }
 
         if (!this.permaBlink) {
@@ -202,9 +227,9 @@ class Typedtext {
         for (let i = 0; i < text.length; i++) {
             // delay
             if (this.varSpeed) {
-                // var typing speed randomly by up to +-100ms
-                let variance = 100;
-                await waitForMs(getRandInt(this.delay-variance, this.delay+variance));
+                // var typing speed randomly by up to +100ms, -50ms
+                let variance = 200;
+                await waitForMs(getRandInt(this.delay-(variance/2), this.delay+variance));
             }
             else {
                 await waitForMs(this.delay);
@@ -213,7 +238,9 @@ class Typedtext {
             this.elmSent.append(text[i]);
         }
 
-        this.startBlink();
+        if (!this.staticCursor) {
+            this.startBlink();
+        }
 
         // check if add. timeout for content text has been set
         if ("timeout" in content) {
@@ -238,7 +265,9 @@ class Typedtext {
             this.elmSent.innerHTML = letters.join("");
         }
 
-        this.startBlink();
+        if (!this.staticCursor) {
+            this.startBlink();
+        }
 
         // reset content styles to object instance config
         this.resetStyles();
@@ -259,12 +288,8 @@ class Typedtext {
         }
     }
 
-    private printConfig() {
-        console.log(`- Typedtext.js ${typedtextVersionId} -\n\nconfig:`, this.config);
-    }
-
-    static getVersion() {
-        return typedtextVersionId;
+    private printConfig(config: typeof defaultOptions) {
+        console.log(`- Typedtext.js ${typedtextjsVersionId} -\n\nconfig:`, config);
     }
 
     protected startBlink(): void {
@@ -277,12 +302,13 @@ class Typedtext {
     }
 
     protected resetStyles() {
+        // reset styles to global object config settings
         // reset text color
-        this.elmSent.style.color = this.config.textColor;
+        this.elmSent.style.color = this.textColor;
         // reset cursor
         this.elmCurs.innerHTML = this.cursor;
         // reset cursor color
-        this.elmCurs.style.color = this.config.cursorColor;
+        this.elmCurs.style.color = this.cursorColor;
     }
 }
 
@@ -298,7 +324,7 @@ function getRandInt(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-// define css blink animation globally on site
+// define css blink animation globally on site when script is run
 let cssStyle = document.createElement('style');
 cssStyle.innerHTML = "@keyframes blink {0% {opacity: 1;} 40% {opacity: 1;} 60% {opacity: 0;} 100% {opacity: 0;}}";
 document.head.appendChild(cssStyle);
