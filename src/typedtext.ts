@@ -227,7 +227,7 @@ class Typedtext {
         for (let i = 0; i < text.length; i++) {
             // delay
             if (this.varSpeed) {
-                // var typing speed randomly by up to +100ms, -50ms
+                // var typing speed randomly by up to -100ms, +200ms
                 let variance = 200;
                 await waitForMs(getRandInt(this.delay-(variance/2), this.delay+variance));
             }
