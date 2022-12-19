@@ -1,2 +1,5 @@
 # ignore dev folder (contains html templates for testing)
 /dev
+
+# any transpiled .js files in src
+/src/*.js
