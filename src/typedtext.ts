@@ -8,7 +8,7 @@ Copyright (C) Philippe Braum (www.pbr.plus)
 Available under the Apache 2.0 license
 */
 
-const typedtextjsVersionId = "0.1.2:122022";
+const typedtextjsVersionId = "0.1.3:122022";
 
 const defaultOptions = {
     /**
@@ -75,6 +75,11 @@ const defaultOptions = {
     delayAfter: 1500,
 
     /**
+     * @property {number} delete speed of single chars in ms
+     */
+    deleteSpeed: 100,
+
+    /**
      * @property {boolean} prints config to console
      */
     printConfig: false,
@@ -117,6 +122,7 @@ class Typedtext {
     readonly content: any[];
     readonly delay: number;
     readonly delayAfter: number;
+    readonly deleteSpeed: number;
     readonly varSpeed: boolean;
     readonly underline: boolean;
 
@@ -151,6 +157,7 @@ class Typedtext {
         this.delay = config.delay;
         // delay before deletion animation starts
         this.delayAfter = config.delayAfter;
+        this.deleteSpeed = config.deleteSpeed;
         // varying typing speed
         this.varSpeed = config.varSpeed;
         // always underline text
@@ -258,7 +265,7 @@ class Typedtext {
 
         while (letters.length > 0) {
             // delay
-            await waitForMs(this.delay);
+            await waitForMs(this.deleteSpeed);
             // remove last letter
             letters.pop();
             // update element
