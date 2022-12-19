@@ -3,3 +3,4 @@
 
 # any transpiled .js files in src
 /src/*.js
+/src/*.js.map
