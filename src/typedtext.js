@@ -8,7 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-const version = "0.1.1:122022";
+const typedtextVersionId = "0.1.2:122022";
 const defaultOptions = {
     elementSentenceId: "sentence",
     elementCursorId: "cursor",
@@ -19,10 +19,10 @@ const defaultOptions = {
     blinkSpeed: 0.6,
     content: [
         {
-            text: "This is the default text!",
+            text: "This is Typedtext.js!",
             color: "black",
-            cursor: ";",
-            cursorColor: "black",
+            cursor: "|",
+            cursorColor: "blue",
             timeout: 2000
         }
     ],
@@ -63,7 +63,7 @@ class Typedtext {
     }
     styleElements() {
         if (!this.elmSent || !this.elmCurs) {
-            throw `Typerscript element(s) not found:
+            throw `Typedtext target element(s) not found:
                 sentence: ${this.elmSent},
                 cursor: ${this.elmCurs}`;
         }
@@ -102,9 +102,7 @@ class Typedtext {
                 }
                 this.elmSent.append(text[i]);
             }
-            if (!this.permaBlink) {
-                this.startBlink();
-            }
+            this.startBlink();
             if ("timeout" in content) {
                 yield waitForMs(content.timeout);
             }
@@ -122,9 +120,7 @@ class Typedtext {
                 letters.pop();
                 this.elmSent.innerHTML = letters.join("");
             }
-            if (!this.permaBlink) {
-                this.startBlink();
-            }
+            this.startBlink();
             this.resetStyles();
         });
     }
@@ -144,7 +140,10 @@ class Typedtext {
         });
     }
     printConfig() {
-        console.log(`- Typedtext.js ${version} -\n\nconfig:`, this.config);
+        console.log(`- Typedtext.js ${typedtextVersionId} -\n\nconfig:`, this.config);
+    }
+    static getVersion() {
+        return typedtextVersionId;
     }
     startBlink() {
         this.elmCurs.style.animation = this.blink;
@@ -166,3 +165,7 @@ function getRandInt(min, max) {
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+let cssStyle = document.createElement('style');
+cssStyle.innerHTML = "@keyframes blink {0% {opacity: 1;} 40% {opacity: 1;} 60% {opacity: 0;} 100% {opacity: 0;}}";
+document.head.appendChild(cssStyle);
+//# sourceMappingURL=typedtext.js.map

@@ -8,7 +8,7 @@ Copyright (C) Philippe Braum (www.pbr.plus)
 Available under the Apache 2.0 license
 */
 
-const version = "0.1.1:122022";
+const typedtextVersionId = "0.1.2:122022";
 
 const defaultOptions = {
     /**
@@ -47,15 +47,15 @@ const defaultOptions = {
     blinkSpeed: 0.6,
 
     /**
-     * @property {array} array containing dict(s) with content to be typed in sequence and the respective options
+     * @property {array} array containing typeof contentObj (sse below) with content to be typed and the respective options
      */
     content: [
         {
-            text: "This is the default text!", // required
+            text: "This is Typedtext.js!", // required
             color: "black", // optional: font color
-            cursor: ";", // optional: cursor for individual word
-            cursorColor: "black", // optional: cursor color for word
-            timeout: 2000 // optional: timeout after word has been typed
+            cursor: "|", // optional: cursor for individual word
+            cursorColor: "blue", // optional: cursor color for word
+            timeout: 2000 // optional: (additional to delayAfter) timeout after word has been typed
         }
     ],
 
@@ -102,7 +102,7 @@ const contentObj = {
 };
 
 class Typedtext {
-    public config: any;
+    readonly config: any;
 
     readonly elmSent: HTMLSpanElement;
     readonly elmCurs: HTMLSpanElement;
@@ -132,6 +132,7 @@ class Typedtext {
         this.permaBlink = this.config.permaBlink;
         this.blink = `blink ${this.config.blinkSpeed}s linear infinite alternate`;
         // add css to elements
+        // TODO autostyle on/off feature
         this.styleElements();
         // set global cursor
         this.elmCurs.innerHTML = this.cursor;
@@ -152,7 +153,7 @@ class Typedtext {
 
     protected styleElements(): void {
         if (!this.elmSent || !this.elmCurs) {
-            throw `Typerscript element(s) not found:
+            throw `Typedtext target element(s) not found:
                 sentence: ${this.elmSent},
                 cursor: ${this.elmCurs}`;
         }
@@ -197,6 +198,7 @@ class Typedtext {
         if (!this.permaBlink) {
             this.stopBlink();
         }
+
         for (let i = 0; i < text.length; i++) {
             // delay
             if (this.varSpeed) {
@@ -210,9 +212,9 @@ class Typedtext {
             // append letter for letter
             this.elmSent.append(text[i]);
         }
-        if (!this.permaBlink) {
-            this.startBlink();
-        }
+
+        this.startBlink();
+
         // check if add. timeout for content text has been set
         if ("timeout" in content) {
             await waitForMs(<number>content.timeout);
@@ -222,9 +224,11 @@ class Typedtext {
     protected async delete() {
         const sentence = this.elmSent.innerHTML;
         const letters = sentence.split("");
+
         if (!this.permaBlink) {
             this.stopBlink();
         }
+
         while (letters.length > 0) {
             // delay
             await waitForMs(this.delay);
@@ -233,9 +237,9 @@ class Typedtext {
             // update element
             this.elmSent.innerHTML = letters.join("");
         }
-        if (!this.permaBlink) {
-            this.startBlink();
-        }
+
+        this.startBlink();
+
         // reset content styles to object instance config
         this.resetStyles();
     }
@@ -256,7 +260,11 @@ class Typedtext {
     }
 
     private printConfig() {
-        console.log(`- Typedtext.js ${version} -\n\nconfig:`, this.config);
+        console.log(`- Typedtext.js ${typedtextVersionId} -\n\nconfig:`, this.config);
+    }
+
+    static getVersion() {
+        return typedtextVersionId;
     }
 
     protected startBlink(): void {
@@ -289,3 +297,8 @@ function getRandInt(min: number, max: number): number {
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+
+// define css blink animation globally on site
+let cssStyle = document.createElement('style');
+cssStyle.innerHTML = "@keyframes blink {0% {opacity: 1;} 40% {opacity: 1;} 60% {opacity: 0;} 100% {opacity: 0;}}";
+document.head.appendChild(cssStyle);
