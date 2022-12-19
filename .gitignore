@@ -1,0 +1,2 @@
+# ignore dev folder (contains html templates for testing)
+/dev
