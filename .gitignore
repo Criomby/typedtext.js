@@ -4,3 +4,6 @@
 # any transpiled .js files in src
 /src/*.js
 /src/*.js.map
+
+# additional materials (videos, screenshots, gifs, etc.)
+/materials
