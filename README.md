@@ -12,7 +12,7 @@
 
 ### :heavy_check_mark: Dependency-free
 
-###  :heavy_check_mark: written in TS
+###  :heavy_check_mark: Written in TS
 <br>
 
 #### Getting started is as easy as:
@@ -131,3 +131,7 @@ new Typedtext({
     underline: false,
 }
 ```
+
+<hr>
+
+Contact me: <a href="https://pbr.plus">www.pbr.plus</a>
