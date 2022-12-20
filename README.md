@@ -6,7 +6,7 @@
 
 ### :heavy_check_mark: Highly customizable
 
-### :heavy_check_mark: Lightweight (4kb minified)
+### :heavy_check_mark: Lightweight (4kb min)
 
 ### :heavy_check_mark: Dependency-free
 <br>
