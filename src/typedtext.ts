@@ -199,6 +199,7 @@ class Typedtext {
 
         // cursor element
         this.elmCurs.style.display = "inline-block";
+        
         //this.elmCurs.style.justifyContent = "center";
         //this.elmCurs.style.alignItems = "center";
         //this.elmCurs.style.width = "2px";
