@@ -9,6 +9,8 @@
 ### :heavy_check_mark: Lightweight (4kb min)
 
 ### :heavy_check_mark: Dependency-free
+
+###  :heavy_check_mark: written in TS
 <br>
 
 #### Getting started is as easy as:
