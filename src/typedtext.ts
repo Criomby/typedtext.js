@@ -8,7 +8,7 @@ Copyright (C) Philippe Braum (www.pbr.plus)
 Available under the Apache 2.0 license
 */
 
-const typedtextjsVersionId = "0.1.3:122022";
+const typedtextjsVersionId = "0.1.31:122022";
 
 const defaultOptions = {
     /**
@@ -75,24 +75,29 @@ const defaultOptions = {
     delayAfter: 1500,
 
     /**
-     * @property {number} delete speed of single chars in ms
+     * @property {number} deleteSpeed: delete speed of single chars in ms
      */
     deleteSpeed: 100,
 
     /**
-     * @property {boolean} prints config to console
+     * @property {boolean} printConfig: prints config to console
      */
     printConfig: false,
 
     /**
-     * @property {boolean} starts animation at object creation
+     * @property {boolean} autoRun: starts animation at object creation
      */
     autoRun: false,
 
     /**
-     * @property {boolean} varies typing speed between chars by +-60ms so typing looks more natural instead of linear speed
+     * @property {boolean} varSpeed: varies typing speed between chars by +-60ms so typing looks more natural instead of linear speed
      */
     varSpeed: false,
+
+    /**
+     * @property {number} varSpeedVar: 0..1 (0% - 100%) by how much typing speed varies (how much "delay" varies)
+     */
+    varSpeedVar: 0.5,
 
     /**
      * @property {boolean} underline typed text
@@ -124,6 +129,7 @@ class Typedtext {
     readonly delayAfter: number;
     readonly deleteSpeed: number;
     readonly varSpeed: boolean;
+    readonly varSpeedVar: number;
     readonly underline: boolean;
 
     constructor(
@@ -160,6 +166,8 @@ class Typedtext {
         this.deleteSpeed = config.deleteSpeed;
         // varying typing speed
         this.varSpeed = config.varSpeed;
+        // variance of typing speed if varSpeed == true
+        this.varSpeedVar = config.varSpeedVar;
         // always underline text
         this.underline = config.underline;
 
@@ -235,9 +243,8 @@ class Typedtext {
         for (let i = 0; i < text.length; i++) {
             // delay
             if (this.varSpeed) {
-                // var typing speed randomly by up to -100ms, +200ms
-                let variance = 200;
-                await waitForMs(getRandInt(this.delay-(variance/2), this.delay+variance));
+                // var typing speed randomly by up to +-this.varSpeedVar
+                await waitForMs(getRandInt(this.delay - (this.varSpeedVar / 2), this.delay + this.varSpeedVar));
             }
             else {
                 await waitForMs(this.delay);
