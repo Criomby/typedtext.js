@@ -4,18 +4,33 @@
 
 ### :heavy_check_mark: Simple interface
 
-Getting started is as easy as:
+### :heavy_check_mark: Highly customizable
+
+### :heavy_check_mark: Lightweight (4kb minified)
+
+### :heavy_check_mark: Dependency-free
+<br>
+
+#### Getting started is as easy as:
 ```javascript
+// in your *.js file
 new Typedtext({
     content: [{text: "This is Typedtext.js!"}],
     autoRun: true
 });
 ```
 
-### :heavy_check_mark: Highly customizable
+```html
+<!-- in your *.html -->
+<div>
+  <span id="sentence"></span><span id="cursor"></span>
+  <!-- element id's can optionally be changed in config -->
+</div>
+```
 
-Config options:
+<hr>
 
+#### Config options:
 (The values seen here are the default values if not overwritten by user config)
 
 ```javascript
@@ -110,7 +125,3 @@ Config options:
     underline: false,
 }
 ```
-
-### :heavy_check_mark: Lightweight (4kb minified)
-
-### :heavy_check_mark: Dependency-free
