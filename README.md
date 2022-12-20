@@ -1,4 +1,6 @@
-![Typedtextjs_logo](https://user-images.githubusercontent.com/86114549/208562376-057fad3c-73de-4c4d-b4e2-059d44401ec8.png)
+<div align="center">
+    <img src="https://user-images.githubusercontent.com/86114549/208742537-288dd0df-5596-4f41-9d7c-d7b14db18fbc.gif" alt="typedtextjs_animation" width="700px">  
+</div>
 
 # A JS library for typing animations.
 
@@ -127,3 +129,5 @@ new Typedtext({
     underline: false,
 }
 ```
+
+![Typedtextjs_logo](https://user-images.githubusercontent.com/86114549/208562376-057fad3c-73de-4c4d-b4e2-059d44401ec8.png)
