@@ -7,11 +7,7 @@
 Getting started is as easy as:
 ```javascript
 new Typedtext({
-    content: [
-        {
-            text: "This is Typedtext.js!"
-        }
-    ],
+    content: [{text: "This is Typedtext.js!"}],
     autoRun: true
 });
 ```
@@ -19,6 +15,9 @@ new Typedtext({
 ### :heavy_check_mark: Highly customizable
 
 Config options:
+
+(The values seen here are the default values if not overwritten by user config)
+
 ```javascript
 {
     /**
@@ -67,6 +66,7 @@ Config options:
     content: [
         {
             text: "This is Typedtext.js!", // required
+            // if options for content obj are omitted, object instance configs (default or user config if set) are used
             color: "black", // optional: font color
             cursor: "|", // optional: cursor for individual word
             cursorColor: "blue", // optional: cursor color for word
