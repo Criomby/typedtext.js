@@ -212,7 +212,7 @@ class Typedtext {
         //this.elmCurs.style.alignItems = "center";
         //this.elmCurs.style.width = "2px";
         //this.elmCurs.style.height = "2rem"
-        this.elmCurs.style.color = config.textColor;
+        this.elmCurs.style.color = config.cursorColor;
         //this.elmCurs.style.backgroundColor = "white";
         //this.elmCurs.style.marginLeft = "8px";
         this.elmCurs.style.animation = this.blink;
