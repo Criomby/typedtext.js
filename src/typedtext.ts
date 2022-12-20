@@ -95,9 +95,9 @@ const defaultOptions = {
     varSpeed: false,
 
     /**
-     * @property {number} varSpeedVar: 0..1 (0% - 100%) by how much typing speed varies (how much "delay" varies)
+     * @property {number} varSpeedP: 0% - 100% by how much typing speed varies (how much "delay" varies)
      */
-    varSpeedVar: 0.5,
+    varSpeedP: 50,
 
     /**
      * @property {boolean} underline typed text
@@ -129,7 +129,7 @@ class Typedtext {
     readonly delayAfter: number;
     readonly deleteSpeed: number;
     readonly varSpeed: boolean;
-    readonly varSpeedVar: number;
+    readonly varSpeedP: number;
     readonly underline: boolean;
 
     constructor(
@@ -167,7 +167,7 @@ class Typedtext {
         // varying typing speed
         this.varSpeed = config.varSpeed;
         // variance of typing speed if varSpeed == true
-        this.varSpeedVar = config.varSpeedVar;
+        this.varSpeedP = config.varSpeedP;
         // always underline text
         this.underline = config.underline;
 
@@ -243,8 +243,12 @@ class Typedtext {
         for (let i = 0; i < text.length; i++) {
             // delay
             if (this.varSpeed) {
-                // var typing speed randomly by up to +-this.varSpeedVar
-                await waitForMs(getRandInt(this.delay - (this.varSpeedVar / 2), this.delay + this.varSpeedVar));
+                // var typing speed randomly between -varSpeedP/2% and +varSpeedP%
+                // convert number to percentage
+                let variance = this.varSpeedP / 100;
+                let randGen = getRandInt(this.delay * (1 - (variance / 2) ), this.delay * (1 + variance));
+                // lowest time between keystrokes: 10ms
+                await waitForMs((randGen < 10) ? 10 : randGen);
             }
             else {
                 await waitForMs(this.delay);
