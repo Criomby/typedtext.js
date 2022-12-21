@@ -132,6 +132,8 @@ class Typedtext {
     readonly varSpeedP: number;
     readonly underline: boolean;
 
+    private running: boolean = false; // save object state
+
     constructor(
             options = {} // optional configurations passed in as dictionary
         ) {
@@ -293,9 +295,11 @@ class Typedtext {
     }
 
     protected async run() {
-        // run in endless loop
+        // run in endless loop until obj state is manually changed
+        this.running = true;
+
         let i = 0;
-        while (true) {
+        while (this.running) {
             await this.type(this.content[i]);
             await waitForMs(this.delayAfter);
             await this.delete();
@@ -305,6 +309,11 @@ class Typedtext {
                 i = 0;
             }
         }
+    }
+
+    protected stop() {
+        // stop animation
+        this.running = false;
     }
 
     private printConfig(config: typeof defaultOptions) {
