@@ -1,7 +1,7 @@
 /*
 Typedtext.js
 
-JS module for typewriter animations
+JS module for typewriter animations.
 
 Copyright (C) Philippe Braum (www.pbr.plus)
 
@@ -12,47 +12,47 @@ const typedtextjsVersionId = "0.1.31:122022";
 
 const defaultOptions = {
     /**
-     * @property {string} ID of element where content will be typed
+     * @property {string} elementSentenceId: ID of element where the content will be typed
      */
     elementSentenceId: "sentence",
 
     /**
-     * @property {string} ID of element where cursor will be shown
+     * @property {string} elementCursorId: ID of element where the cursor will be shown
      */
     elementCursorId: "cursor",
 
     /**
-     * @property {string} (character) used as cursor
+     * @property {string} cursor: character used as cursor
      */
     cursor: "|",
 
     /**
-     * @property {string} default cursor color
+     * @property {string} cursorColor: default cursor color
      */
     cursorColor: "black",
 
     /**
-     * @property {string} set global text color for content
+     * @property {string} textColor: set global text color for content
      */
     textColor: "black",
 
     /**
-     * @property {boolean} true: cursor blinks even when typing
+     * @property {boolean} permaBlink: true: cursor blinks, even when typing
      */
     permaBlink: false,
 
     /**
-     * @property {boolean} true: cursor does not blink at any time
+     * @property {boolean} staticCursor: true: cursor does not blink at any time
      */
     staticCursor: false,
 
     /**
-     * @property {number} time interval cursor blinking in seconds
+     * @property {number} blinkSpeed: time interval cursor blinking in seconds
      */
     blinkSpeed: 0.6,
 
     /**
-     * @property {array} array containing typeof contentObj (sse below) with content to be typed and the respective options
+     * @property {array} content: array containing typeof contentObj (see below) with content to be typed and the respective options
      */
     content: [
         {
@@ -61,7 +61,8 @@ const defaultOptions = {
             cursor: "|", // optional: cursor for individual word
             cursorColor: "blue", // optional: cursor color for word
             timeout: 2000 // optional: (additional to delayAfter) timeout after word has been typed
-        }
+        },
+        // add as many more as you like!
     ],
 
     /**
@@ -70,7 +71,7 @@ const defaultOptions = {
     delay: 100,
 
     /**
-     * @property {number} delay in ms after a content object has been typed / deleted and before it is deleted / the next is typed
+     * @property {number} delayAfter: delay in ms after a content object has been typed / deleted and before it is deleted / the next is typed
      */
     delayAfter: 1500,
 
