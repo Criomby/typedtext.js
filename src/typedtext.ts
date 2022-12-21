@@ -208,6 +208,11 @@ class Typedtext {
         }
     }
 
+    protected stop() {
+        // stop animation
+        this.running = false;
+    }
+
     protected async type(content: typeof contentObj) {
         const text = content.text;
         // check for optional content settings
@@ -277,11 +282,6 @@ class Typedtext {
 
         // reset content styles to object instance config
         this._resetStyles();
-    }
-
-    protected stop() {
-        // stop animation
-        this.running = false;
     }
 
     private _printConfig(config: typeof defaultOptions) {
