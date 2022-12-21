@@ -178,7 +178,7 @@ class Typedtext {
 
         // add css & content (e.g. cursor) to elements
         // TODO autostyle on/off feature
-        this.setupElements(config);
+        this._setupElements(config);
 
         // autoRun
         if (config.autoRun) {
@@ -190,7 +190,7 @@ class Typedtext {
         return typedtextjsVersionId;
     }
 
-    protected setupElements(config: typeof defaultOptions): void {
+    protected _setupElements(config: typeof defaultOptions): void {
         if (!this.elmSent || !this.elmCurs) {
             throw `Typedtext.js: target element(s) not found;
                 sentence: ${this.elmSent},
