@@ -8,7 +8,7 @@ Copyright (C) Philippe Braum (www.pbr.plus)
 Available under the MIT license
 */
 
-const typedtextjsVersionId = "0.1.32:122022";
+const typedtextjsVersionId = "0.1.33:122022";
 
 const defaultOptions = {
     /**
@@ -84,11 +84,6 @@ const defaultOptions = {
      * @property {boolean} printConfig: prints config to console
      */
     printConfig: false,
-
-    /**
-     * @property {boolean} autoRun: starts animation at object creation
-     */
-    autoRun: false,
 
     /**
      * @property {boolean} varSpeed: varies typing speed between chars by +-60ms so typing looks more natural instead of linear speed
@@ -180,11 +175,6 @@ class Typedtext {
         // add css & content (e.g. cursor) to elements
         // TODO autostyle on/off feature
         this._setupElements(config);
-
-        // autoRun
-        if (config.autoRun) {
-            this.run();
-        }
     }
 
     static getVersion() {
