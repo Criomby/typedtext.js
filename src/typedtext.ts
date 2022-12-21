@@ -190,37 +190,21 @@ class Typedtext {
         return typedtextjsVersionId;
     }
 
-    protected _setupElements(config: typeof defaultOptions): void {
-        if (!this.elmSent || !this.elmCurs) {
-            throw `Typedtext.js: target element(s) not found;
-                sentence: ${this.elmSent},
-                cursor: ${this.elmCurs}`;
+    protected async run() {
+        // run in endless loop until obj state is manually changed
+        this.running = true;
+
+        let i = 0;
+        while (this.running) {
+            await this.type(this.content[i]);
+            await waitForMs(this.delayAfter);
+            await this.delete();
+            await waitForMs(this.delayAfter);
+            i++;
+            if (i >= this.content.length) {
+                i = 0;
+            }
         }
-
-        // sentence element
-        this.elmSent.style.display = "inline-block";
-        //this.elmSent.style.justifyContent = "center";
-        //this.elmSent.style.alignItems = "center";
-        //this.elmSent.style.height = "2rem"
-        this.elmSent.style.color = config.textColor;
-        if (this.underline) {
-            this.elmSent.style.textDecoration = "underline";
-        }
-
-        // cursor element
-        this.elmCurs.style.display = "inline-block";
-        
-        //this.elmCurs.style.justifyContent = "center";
-        //this.elmCurs.style.alignItems = "center";
-        //this.elmCurs.style.width = "2px";
-        //this.elmCurs.style.height = "2rem"
-        this.elmCurs.style.color = config.cursorColor;
-        //this.elmCurs.style.backgroundColor = "white";
-        //this.elmCurs.style.marginLeft = "8px";
-        this.elmCurs.style.animation = this.blink;
-
-        // set global cursor
-        this.elmCurs.innerHTML = this.cursor;
     }
 
     protected async type(content: typeof contentObj) {
@@ -294,23 +278,6 @@ class Typedtext {
         this._resetStyles();
     }
 
-    protected async run() {
-        // run in endless loop until obj state is manually changed
-        this.running = true;
-
-        let i = 0;
-        while (this.running) {
-            await this.type(this.content[i]);
-            await waitForMs(this.delayAfter);
-            await this.delete();
-            await waitForMs(this.delayAfter);
-            i++;
-            if (i >= this.content.length) {
-                i = 0;
-            }
-        }
-    }
-
     protected stop() {
         // stop animation
         this.running = false;
@@ -318,6 +285,39 @@ class Typedtext {
 
     private _printConfig(config: typeof defaultOptions) {
         console.log(`- Typedtext.js ${typedtextjsVersionId} -\n\nconfig:`, config);
+    }
+
+    protected _setupElements(config: typeof defaultOptions): void {
+        if (!this.elmSent || !this.elmCurs) {
+            throw `Typedtext.js: target element(s) not found;
+                sentence: ${this.elmSent},
+                cursor: ${this.elmCurs}`;
+        }
+
+        // sentence element
+        this.elmSent.style.display = "inline-block";
+        //this.elmSent.style.justifyContent = "center";
+        //this.elmSent.style.alignItems = "center";
+        //this.elmSent.style.height = "2rem"
+        this.elmSent.style.color = config.textColor;
+        if (this.underline) {
+            this.elmSent.style.textDecoration = "underline";
+        }
+
+        // cursor element
+        this.elmCurs.style.display = "inline-block";
+        
+        //this.elmCurs.style.justifyContent = "center";
+        //this.elmCurs.style.alignItems = "center";
+        //this.elmCurs.style.width = "2px";
+        //this.elmCurs.style.height = "2rem"
+        this.elmCurs.style.color = config.cursorColor;
+        //this.elmCurs.style.backgroundColor = "white";
+        //this.elmCurs.style.marginLeft = "8px";
+        this.elmCurs.style.animation = this.blink;
+
+        // set global cursor
+        this.elmCurs.innerHTML = this.cursor;
     }
 
     protected _startBlink(): void {
