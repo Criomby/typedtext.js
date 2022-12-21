@@ -5,7 +5,7 @@ JS module for typewriter animations
 
 Copyright (C) Philippe Braum (www.pbr.plus)
 
-Available under the Apache 2.0 license
+Available under the MIT license
 */
 
 const typedtextjsVersionId = "0.1.31:122022";
