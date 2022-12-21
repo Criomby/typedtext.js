@@ -141,7 +141,7 @@ class Typedtext {
         const config = {...defaultOptions, ...options};
 
         if (config.printConfig === true) {
-            this.printConfig(config);
+            this._printConfig(config);
         }
 
         // check that only one option of permaBlink or staticCursor is set
@@ -239,7 +239,7 @@ class Typedtext {
         }
 
         if (!this.permaBlink) {
-            this.stopBlink();
+            this._stopBlink();
         }
 
         for (let i = 0; i < text.length; i++) {
@@ -260,7 +260,7 @@ class Typedtext {
         }
 
         if (!this.staticCursor) {
-            this.startBlink();
+            this._startBlink();
         }
 
         // check if add. timeout for content text has been set
@@ -274,7 +274,7 @@ class Typedtext {
         const letters = sentence.split("");
 
         if (!this.permaBlink) {
-            this.stopBlink();
+            this._stopBlink();
         }
 
         while (letters.length > 0) {
@@ -287,11 +287,11 @@ class Typedtext {
         }
 
         if (!this.staticCursor) {
-            this.startBlink();
+            this._startBlink();
         }
 
         // reset content styles to object instance config
-        this.resetStyles();
+        this._resetStyles();
     }
 
     protected async run() {
@@ -316,20 +316,20 @@ class Typedtext {
         this.running = false;
     }
 
-    private printConfig(config: typeof defaultOptions) {
+    private _printConfig(config: typeof defaultOptions) {
         console.log(`- Typedtext.js ${typedtextjsVersionId} -\n\nconfig:`, config);
     }
 
-    protected startBlink(): void {
+    protected _startBlink(): void {
         // css "blink" (has to be) defined in stylesheet
         this.elmCurs.style.animation = this.blink;
     }
 
-    protected stopBlink(): void {
+    protected _stopBlink(): void {
         this.elmCurs.style.animation = "";
     }
 
-    protected resetStyles() {
+    protected _resetStyles() {
         // reset styles to global object config settings
         // reset text color
         this.elmSent.style.color = this.textColor;
