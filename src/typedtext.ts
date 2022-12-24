@@ -210,6 +210,11 @@ class Typedtext {
 
     protected async type(content: typeof contentObj) {
         const text = content.text;
+
+        if (text == "undefined" || text == "") {
+            throw "text has to be defined and cannot be empty";
+        }
+
         // check for optional content settings
         if ("color" in content) {
             // set text color
