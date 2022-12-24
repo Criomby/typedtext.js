@@ -93,7 +93,7 @@ const defaultOptions = {
     /**
      * @property {number} varSpeedP: 0% - 100% by how much typing speed varies (how much "delay" varies)
      */
-    varSpeedP: 50,
+    varSpeedPercentage: 0.5,
 
     /**
      * @property {boolean} underline typed text
@@ -125,10 +125,10 @@ class Typedtext {
     readonly delayAfter: number;
     readonly deleteSpeed: number;
     readonly varSpeed: boolean;
-    readonly varSpeedP: number;
+    readonly varSpeedPercentage: number;
     readonly underline: boolean;
 
-    private running: boolean = false; // save object state
+    #running: boolean = false; // save object state
 
     constructor(
             options = {} // optional configurations passed in as dictionary
@@ -165,7 +165,7 @@ class Typedtext {
         // varying typing speed
         this.varSpeed = config.varSpeed;
         // variance of typing speed if varSpeed == true
-        this.varSpeedP = config.varSpeedP;
+        this.varSpeedPercentage = config.varSpeedPercentage;
         // always underline text
         this.underline = config.underline;
 
@@ -181,12 +181,17 @@ class Typedtext {
         return typedtextjsVersionId;
     }
 
+    protected isRunning() {
+        // get status of object animation
+        return this.#running;
+    }
+
     protected async run() {
         // run in endless loop until obj state is manually changed
-        this.running = true;
+        this.#running = true;
 
         let i = 0;
-        while (this.running) {
+        while (this.#running) {
             await this.type(this.content[i]);
             await waitForMs(this.delayAfter);
             await this.delete();
@@ -200,7 +205,7 @@ class Typedtext {
 
     protected stop() {
         // stop animation
-        this.running = false;
+        this.#running = false;
     }
 
     protected async type(content: typeof contentObj) {
@@ -227,7 +232,7 @@ class Typedtext {
             if (this.varSpeed) {
                 // var typing speed randomly between -varSpeedP/2% and +varSpeedP%
                 // convert number to percentage
-                let variance = this.varSpeedP / 100;
+                let variance = this.varSpeedPercentage;
                 let randGen = getRandInt(this.delay * (1 - (variance / 2) ), this.delay * (1 + variance));
                 // lowest time between keystrokes: 10ms
                 await waitForMs((randGen < 10) ? 10 : randGen);
