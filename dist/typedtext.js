@@ -19,232 +19,243 @@ var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
     return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
 };
-var _Typedtext_running;
-const typedtextjsVersionId = "0.2.1:122022";
-const defaultOptions = {
-    elementSentenceId: "sentence",
-    elementCursorId: "cursor",
-    cursor: "|",
-    cursorColor: "black",
-    textColor: "black",
-    permaBlink: false,
-    staticCursor: false,
-    blinkSpeed: 0.6,
-    content: [
-        {
-            text: "This is Typedtext.js!",
-            color: "black",
-            cursor: "|",
-            cursorColor: "blue",
-            timeout: 2000
-        },
-    ],
-    delay: 100,
-    delayAfter: 1500,
-    deleteSpeed: 100,
-    printConfig: false,
-    varSpeed: false,
-    varSpeedPercentage: 0.5,
-    typos: false,
-    typosProb: 0.1,
-    typosDelayMultiplier: 3.5,
-    underline: false,
-    selectable: true
-};
-const contentObj = {
-    text: "default",
-    color: "black",
-    cursor: "|",
-    cursorColor: "blue",
-    timeout: 2000
-};
-class Typedtext {
-    constructor(options = {}) {
-        _Typedtext_running.set(this, false);
-        const config = Object.assign(Object.assign({}, defaultOptions), options);
-        if (config.printConfig === true) {
-            this._printConfig(config);
+(function (global, factory) {
+    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+        typeof define === 'function' && define.amd ? define('Typedtext', factory) :
+            (global = typeof globalThis !== 'undefined' ? globalThis : global || self, (function () {
+                var current = global.Typedtext;
+                var exports = global.Typedtext = factory();
+                exports.noConflict = function () { global.Typedtext = current; return exports; };
+            }()));
+}(this, (function () {
+    var _Typedtext_running;
+    const VERSION = "0.2.2:122022";
+    const defaultOptions = {
+        elementSentenceId: "sentence",
+        elementCursorId: "cursor",
+        cursor: "|",
+        cursorColor: "black",
+        textColor: "black",
+        permaBlink: false,
+        staticCursor: false,
+        blinkSpeed: 0.6,
+        content: [
+            {
+                text: "This is Typedtext.js!",
+                color: "black",
+                cursor: "|",
+                cursorColor: "blue",
+                timeout: 2000
+            },
+        ],
+        delay: 100,
+        delayAfter: 1500,
+        deleteSpeed: 100,
+        printConfig: false,
+        varSpeed: false,
+        varSpeedPercentage: 0.5,
+        typos: false,
+        typosProb: 0.1,
+        typosDelayMultiplier: 3.5,
+        underline: false,
+        selectable: true
+    };
+    const contentObj = {
+        text: "default",
+        color: "black",
+        cursor: "|",
+        cursorColor: "blue",
+        timeout: 2000
+    };
+    class Typedtext {
+        constructor(options = {}) {
+            _Typedtext_running.set(this, false);
+            const config = Object.assign(Object.assign({}, defaultOptions), options);
+            if (config.printConfig === true) {
+                this._printConfig(config);
+            }
+            if (config.permaBlink && config.staticCursor) {
+                throw "Typedtext.js: Cannot set both {permaBlink: true, staticCursor: true}. Select one.";
+            }
+            this.elmSent = document.getElementById(config.elementSentenceId);
+            this.elmCurs = document.getElementById(config.elementCursorId);
+            this.cursor = config.cursor;
+            this.cursorColor = config.cursorColor;
+            this.textColor = config.textColor;
+            this.permaBlink = config.permaBlink;
+            this.staticCursor = config.staticCursor;
+            this.content = config.content;
+            this.delay = config.delay;
+            this.delayAfter = config.delayAfter;
+            this.deleteSpeed = config.deleteSpeed;
+            this.varSpeed = config.varSpeed;
+            this.varSpeedPercentage = config.varSpeedPercentage;
+            this.typos = config.typos;
+            this.typosProb = config.typosProb;
+            this.typosDelayMultiplier = config.typosDelayMultiplier;
+            this.underline = config.underline;
+            this.selectable = config.selectable;
+            this.blink = `blink ${config.blinkSpeed}s linear infinite alternate`;
+            this._setupElements(config);
         }
-        if (config.permaBlink && config.staticCursor) {
-            throw "Typedtext.js: Cannot set both {permaBlink: true, staticCursor: true}. Select one.";
+        static getVersion() {
+            return VERSION;
         }
-        this.elmSent = document.getElementById(config.elementSentenceId);
-        this.elmCurs = document.getElementById(config.elementCursorId);
-        this.cursor = config.cursor;
-        this.cursorColor = config.cursorColor;
-        this.textColor = config.textColor;
-        this.permaBlink = config.permaBlink;
-        this.staticCursor = config.staticCursor;
-        this.content = config.content;
-        this.delay = config.delay;
-        this.delayAfter = config.delayAfter;
-        this.deleteSpeed = config.deleteSpeed;
-        this.varSpeed = config.varSpeed;
-        this.varSpeedPercentage = config.varSpeedPercentage;
-        this.typos = config.typos;
-        this.typosProb = config.typosProb;
-        this.typosDelayMultiplier = config.typosDelayMultiplier;
-        this.underline = config.underline;
-        this.selectable = config.selectable;
-        this.blink = `blink ${config.blinkSpeed}s linear infinite alternate`;
-        this._setupElements(config);
-    }
-    static getVersion() {
-        return typedtextjsVersionId;
-    }
-    isRunning() {
-        return __classPrivateFieldGet(this, _Typedtext_running, "f");
-    }
-    run() {
-        return __awaiter(this, void 0, void 0, function* () {
-            __classPrivateFieldSet(this, _Typedtext_running, true, "f");
-            let i = 0;
-            while (__classPrivateFieldGet(this, _Typedtext_running, "f")) {
-                yield this.type(this.content[i]);
-                yield waitForMs(this.delayAfter);
-                yield this.delete();
-                yield waitForMs(this.delayAfter);
-                i++;
-                if (i >= this.content.length) {
-                    i = 0;
+        isRunning() {
+            return __classPrivateFieldGet(this, _Typedtext_running, "f");
+        }
+        run() {
+            return __awaiter(this, void 0, void 0, function* () {
+                __classPrivateFieldSet(this, _Typedtext_running, true, "f");
+                let i = 0;
+                while (__classPrivateFieldGet(this, _Typedtext_running, "f")) {
+                    yield this.type(this.content[i]);
+                    yield waitForMs(this.delayAfter);
+                    yield this.delete();
+                    yield waitForMs(this.delayAfter);
+                    i++;
+                    if (i >= this.content.length) {
+                        i = 0;
+                    }
                 }
-            }
-        });
-    }
-    stop() {
-        __classPrivateFieldSet(this, _Typedtext_running, false, "f");
-    }
-    type(content) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const text = content.text;
-            if (text == "undefined" || text == "") {
-                throw "text has to be defined and cannot be empty";
-            }
-            if ("color" in content) {
-                this.elmSent.style.color = content.color;
-            }
-            if ("cursor" in content) {
-                this.elmCurs.innerHTML = content.cursor;
-            }
-            if ("cursorColor" in content) {
-                this.elmCurs.style.color = content.cursorColor;
-            }
-            if (!this.permaBlink) {
-                this._stopBlink();
-            }
-            for (let i = 0; i < text.length; i++) {
-                if (this.varSpeed) {
-                    yield waitForVarMs(this.delay, this.varSpeedPercentage);
+            });
+        }
+        stop() {
+            __classPrivateFieldSet(this, _Typedtext_running, false, "f");
+        }
+        type(content) {
+            return __awaiter(this, void 0, void 0, function* () {
+                const text = content.text;
+                if (text == "undefined" || text == "") {
+                    throw "text has to be defined and cannot be empty";
                 }
-                else {
-                    yield waitForMs(this.delay);
+                if ("color" in content) {
+                    this.elmSent.style.color = content.color;
                 }
-                if (this.typos) {
-                    if (Math.random() <= this.typosProb) {
-                        this.elmSent.append(getRandChar());
-                        if (this.varSpeed) {
-                            yield waitForVarMs(this.delay * this.typosDelayMultiplier, this.varSpeedPercentage);
+                if ("cursor" in content) {
+                    this.elmCurs.innerHTML = content.cursor;
+                }
+                if ("cursorColor" in content) {
+                    this.elmCurs.style.color = content.cursorColor;
+                }
+                if (!this.permaBlink) {
+                    this._stopBlink();
+                }
+                for (let i = 0; i < text.length; i++) {
+                    if (this.varSpeed) {
+                        yield waitForVarMs(this.delay, this.varSpeedPercentage);
+                    }
+                    else {
+                        yield waitForMs(this.delay);
+                    }
+                    if (this.typos) {
+                        if (Math.random() <= this.typosProb) {
+                            this.elmSent.append(getRandChar());
+                            if (this.varSpeed) {
+                                yield waitForVarMs(this.delay * this.typosDelayMultiplier, this.varSpeedPercentage);
+                            }
+                            else {
+                                yield waitForMs(this.delay * this.typosDelayMultiplier);
+                            }
+                            let currentText = this.elmSent.innerHTML;
+                            let sliced = currentText.slice(0, -1);
+                            this.elmSent.innerHTML = sliced;
+                            if (this.varSpeed) {
+                                yield waitForVarMs(this.delay, this.varSpeedPercentage);
+                            }
+                            else {
+                                yield waitForMs(this.delay);
+                            }
+                            this.elmSent.append(text[i]);
                         }
                         else {
-                            yield waitForMs(this.delay * this.typosDelayMultiplier);
+                            this.elmSent.append(text[i]);
                         }
-                        let currentText = this.elmSent.innerHTML;
-                        let sliced = currentText.slice(0, -1);
-                        this.elmSent.innerHTML = sliced;
-                        if (this.varSpeed) {
-                            yield waitForVarMs(this.delay, this.varSpeedPercentage);
-                        }
-                        else {
-                            yield waitForMs(this.delay);
-                        }
-                        this.elmSent.append(text[i]);
                     }
                     else {
                         this.elmSent.append(text[i]);
                     }
                 }
-                else {
-                    this.elmSent.append(text[i]);
+                if (!this.staticCursor) {
+                    this._startBlink();
                 }
-            }
-            if (!this.staticCursor) {
-                this._startBlink();
-            }
-            if ("timeout" in content) {
-                yield waitForMs(content.timeout);
-            }
-        });
-    }
-    delete() {
-        return __awaiter(this, void 0, void 0, function* () {
-            const sentence = this.elmSent.innerHTML;
-            const letters = sentence.split("");
-            if (!this.permaBlink) {
-                this._stopBlink();
-            }
-            while (letters.length > 0) {
-                yield waitForMs(this.deleteSpeed);
-                letters.pop();
-                this.elmSent.innerHTML = letters.join("");
-            }
-            if (!this.staticCursor) {
-                this._startBlink();
-            }
-            this._resetStyles();
-        });
-    }
-    _printConfig(config) {
-        console.log(`- Typedtext.js ${typedtextjsVersionId} -\n\nconfig:`, config);
-    }
-    _setupElements(config) {
-        if (!this.elmSent || !this.elmCurs) {
-            throw "Typedtext.js: target element(s) not found:\nsentence: ${this.elmSent}\ncursor: ${this.elmCurs}";
+                if ("timeout" in content) {
+                    yield waitForMs(content.timeout);
+                }
+            });
         }
-        this.elmSent.style.display = "inline-block";
-        this.elmSent.style.color = config.textColor;
-        if (this.underline) {
-            this.elmSent.style.textDecoration = "underline";
+        delete() {
+            return __awaiter(this, void 0, void 0, function* () {
+                const sentence = this.elmSent.innerHTML;
+                const letters = sentence.split("");
+                if (!this.permaBlink) {
+                    this._stopBlink();
+                }
+                while (letters.length > 0) {
+                    yield waitForMs(this.deleteSpeed);
+                    letters.pop();
+                    this.elmSent.innerHTML = letters.join("");
+                }
+                if (!this.staticCursor) {
+                    this._startBlink();
+                }
+                this._resetStyles();
+            });
         }
-        this.elmCurs.style.display = "inline-block";
-        this.elmCurs.style.color = config.cursorColor;
-        this.elmCurs.style.animation = this.blink;
-        this.elmCurs.innerHTML = this.cursor;
-        if (!this.selectable) {
-            this.elmSent.classList.add("unselectable");
-            this.elmCurs.classList.add("unselectable");
+        _printConfig(config) {
+            console.log(`- Typedtext.js ${VERSION} -\n\nconfig:`, config);
+        }
+        _setupElements(config) {
+            if (!this.elmSent || !this.elmCurs) {
+                throw "Typedtext.js: target element(s) not found:\nsentence: ${this.elmSent}\ncursor: ${this.elmCurs}";
+            }
+            this.elmSent.style.display = "inline-block";
+            this.elmSent.style.color = config.textColor;
+            if (this.underline) {
+                this.elmSent.style.textDecoration = "underline";
+            }
+            this.elmCurs.style.display = "inline-block";
+            this.elmCurs.style.color = config.cursorColor;
+            this.elmCurs.style.animation = this.blink;
+            this.elmCurs.innerHTML = this.cursor;
+            if (!this.selectable) {
+                this.elmSent.classList.add("unselectable");
+                this.elmCurs.classList.add("unselectable");
+            }
+        }
+        _startBlink() {
+            this.elmCurs.style.animation = this.blink;
+        }
+        _stopBlink() {
+            this.elmCurs.style.animation = "";
+        }
+        _resetStyles() {
+            this.elmSent.style.color = this.textColor;
+            this.elmCurs.innerHTML = this.cursor;
+            this.elmCurs.style.color = this.cursorColor;
         }
     }
-    _startBlink() {
-        this.elmCurs.style.animation = this.blink;
+    _Typedtext_running = new WeakMap();
+    function waitForMs(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
     }
-    _stopBlink() {
-        this.elmCurs.style.animation = "";
+    function waitForVarMs(ms, variance) {
+        let _var = variance / 100;
+        let randNum = getRandInt(ms * (1 - (_var / 2)), ms * (1 + _var));
+        let msWait = (randNum < 10) ? 10 : randNum;
+        return new Promise(resolve => setTimeout(resolve, msWait));
     }
-    _resetStyles() {
-        this.elmSent.style.color = this.textColor;
-        this.elmCurs.innerHTML = this.cursor;
-        this.elmCurs.style.color = this.cursorColor;
+    function getRandInt(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min + 1)) + min;
     }
-}
-_Typedtext_running = new WeakMap();
-function waitForMs(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-function waitForVarMs(ms, variance) {
-    let _var = variance / 100;
-    let randNum = getRandInt(ms * (1 - (_var / 2)), ms * (1 + _var));
-    let msWait = (randNum < 10) ? 10 : randNum;
-    return new Promise(resolve => setTimeout(resolve, msWait));
-}
-function getRandInt(min, max) {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-function getRandChar() {
-    let alphabet = "abcdefghijklmnopqrstuvwxyz";
-    return alphabet[Math.floor(Math.random() * alphabet.length)];
-}
+    function getRandChar() {
+        let alphabet = "abcdefghijklmnopqrstuvwxyz";
+        return alphabet[Math.floor(Math.random() * alphabet.length)];
+    }
+    return Typedtext;
+})));
 let cssStyle = document.createElement('style');
 let blink = "@keyframes blink {0% {opacity: 1;} 40% {opacity: 1;} 60% {opacity: 0;} 100% {opacity: 0;}} ";
 let unselectable = ".unselectable {-webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;} ";
