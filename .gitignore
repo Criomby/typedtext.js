@@ -10,3 +10,6 @@
 
 # additional materials (videos, screenshots, gifs, etc.)
 /materials
+
+# eslint config
+.eslintrc.json
