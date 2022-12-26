@@ -7,7 +7,7 @@ Copyright (C) Philippe Braum (www.pbr.plus)
 
 Available under the MIT license
 */
-
+//test_main
 const typedtextjsVersionId = "0.2.0:122022";
 
 const defaultOptions = {
