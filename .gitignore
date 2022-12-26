@@ -1,9 +1,15 @@
-# ignore dev folder (contains html templates for testing)
+# ignore dev folder (contains local web server for testing)
 /dev
 
 # any transpiled .js files in src
 /src/*.js
 /src/*.js.map
 
+# gcl compile bash script in src
+/src/gc-compile.sh
+
 # additional materials (videos, screenshots, gifs, etc.)
 /materials
+
+# eslint config
+.eslintrc.json

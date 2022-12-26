@@ -8,7 +8,7 @@ Copyright (C) Philippe Braum (www.pbr.plus)
 Available under the MIT license
 */
 
-const typedtextjsVersionId = "0.1.34:122022";
+const typedtextjsVersionId = "0.2.0:122022";
 
 const defaultOptions = {
     /**
@@ -96,6 +96,21 @@ const defaultOptions = {
     varSpeedPercentage: 0.5,
 
     /**
+     * @property {boolean} typos: makes typos while typing as per the defined probability
+     */
+    typos: false,
+
+    /**
+     * @property {number} typosProb: Probability in percent for a typo per char
+     */
+    typosProb: 0.1,
+
+    /**
+     * @property {number} typosDelayMultiplier: How much larger the delay is after the typo has been made and until it gets corected
+     */
+    typosDelayMultiplier: 3.5,
+
+    /**
      * @property {boolean} underline typed text
      */
     underline: false,
@@ -126,6 +141,9 @@ class Typedtext {
     readonly deleteSpeed: number;
     readonly varSpeed: boolean;
     readonly varSpeedPercentage: number;
+    readonly typos: boolean;
+    readonly typosProb: number;
+    readonly typosDelayMultiplier: number;
     readonly underline: boolean;
 
     #running: boolean = false; // save object state
@@ -166,6 +184,10 @@ class Typedtext {
         this.varSpeed = config.varSpeed;
         // variance of typing speed if varSpeed == true
         this.varSpeedPercentage = config.varSpeedPercentage;
+        // typos feature
+        this.typos = config.typos;
+        this.typosProb = config.typosProb;
+        this.typosDelayMultiplier = config.typosDelayMultiplier;
         // always underline text
         this.underline = config.underline;
 
@@ -211,9 +233,11 @@ class Typedtext {
     protected async type(content: typeof contentObj) {
         const text = content.text;
 
+        // check for undefined key "text" in content object
         if (text == "undefined" || text == "") {
             throw "text has to be defined and cannot be empty";
         }
+
 
         // check for optional content settings
         if ("color" in content) {
@@ -236,17 +260,46 @@ class Typedtext {
             // delay
             if (this.varSpeed) {
                 // var typing speed randomly between -varSpeedP/2% and +varSpeedP%
-                // convert number to percentage
-                let variance = this.varSpeedPercentage;
-                let randGen = getRandInt(this.delay * (1 - (variance / 2) ), this.delay * (1 + variance));
-                // lowest time between keystrokes: 10ms
-                await waitForMs((randGen < 10) ? 10 : randGen);
+                await waitForVarMs(this.delay, this.varSpeedPercentage);
             }
             else {
                 await waitForMs(this.delay);
             }
-            // append letter for letter
-            this.elmSent.append(text[i]);
+
+            if (this.typos) {
+                // check if typo will be made
+                if (Math.random() <= this.typosProb) {
+                    // generate typo
+                    this.elmSent.append(getRandChar());
+                    // increased delay after typo
+                    if (this.varSpeed) {
+                        await waitForVarMs(this.delay * this.typosDelayMultiplier, this.varSpeedPercentage);
+                    }
+                    else {
+                        await waitForMs(this.delay * this.typosDelayMultiplier);
+                    }
+                    // delete last inserted char
+                    let currentText: string = this.elmSent.innerHTML;
+                    let sliced: string = currentText.slice(0, -1);
+                    this.elmSent.innerHTML = sliced;
+                    // delay
+                    if (this.varSpeed) {
+                        await waitForVarMs(this.delay, this.varSpeedPercentage);
+                    }
+                    else {
+                        await waitForMs(this.delay);
+                    }
+                    // insert right char
+                    this.elmSent.append(text[i]);
+                }
+                else {
+                    this.elmSent.append(text[i]);
+                }
+            }
+            else {
+                // append letter for letter
+                this.elmSent.append(text[i]);
+            }
         }
 
         if (!this.staticCursor) {
@@ -346,11 +399,31 @@ function waitForMs(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms))
 }
 
+// wait for ms around baseline wait time
+function waitForVarMs(ms: number, variance: number) {
+    let _var = variance / 100; // convert percentage value from int (XXX) to float (X.XX)
+    let randNum = getRandInt(ms * (1 - (_var / 2) ), ms * (1 + _var));
+    // lowest time between keystrokes: 10ms
+    let msWait = (randNum < 10) ? 10 : randNum;
+    return new Promise(resolve => setTimeout(resolve, msWait))
+}
+
 // get a random number between min & max, both inclusive
 function getRandInt(min: number, max: number): number {
     min = Math.ceil(min);
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+// returns a random char, uppercase or lowercase
+function getRandChar(): string {
+    let alphabet = "abcdefghijklmnopqrstuvwxyz";
+    if (Math.random() < 0.5) {
+        return alphabet[Math.floor(Math.random() * alphabet.length)].toUpperCase();
+    }
+    else {
+        return alphabet[Math.floor(Math.random() * alphabet.length)];
+    }
 }
 
 // define css blink animation globally on site when script is run

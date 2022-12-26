@@ -8,7 +8,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-const typedtextjsVersionId = "0.1.33:122022";
+var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (receiver, state, kind, f) {
+    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
+    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+    return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
+};
+var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, state, value, kind, f) {
+    if (kind === "m") throw new TypeError("Private method is not writable");
+    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
+    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
+    return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
+};
+var _Typedtext_running;
+const typedtextjsVersionId = "0.1.34:122022";
 const defaultOptions = {
     elementSentenceId: "sentence",
     elementCursorId: "cursor",
@@ -32,7 +44,10 @@ const defaultOptions = {
     deleteSpeed: 100,
     printConfig: false,
     varSpeed: false,
-    varSpeedP: 50,
+    varSpeedPercentage: 0.5,
+    typos: false,
+    typosProb: 0.1,
+    typosDelayMultiplier: 3.5,
     underline: false,
 };
 const contentObj = {
@@ -44,7 +59,7 @@ const contentObj = {
 };
 class Typedtext {
     constructor(options = {}) {
-        this.running = false;
+        _Typedtext_running.set(this, false);
         const config = Object.assign(Object.assign({}, defaultOptions), options);
         if (config.printConfig === true) {
             this._printConfig(config);
@@ -64,7 +79,10 @@ class Typedtext {
         this.delayAfter = config.delayAfter;
         this.deleteSpeed = config.deleteSpeed;
         this.varSpeed = config.varSpeed;
-        this.varSpeedP = config.varSpeedP;
+        this.varSpeedPercentage = config.varSpeedPercentage;
+        this.typos = config.typos;
+        this.typosProb = config.typosProb;
+        this.typosDelayMultiplier = config.typosDelayMultiplier;
         this.underline = config.underline;
         this.blink = `blink ${config.blinkSpeed}s linear infinite alternate`;
         this._setupElements(config);
@@ -72,11 +90,14 @@ class Typedtext {
     static getVersion() {
         return typedtextjsVersionId;
     }
+    isRunning() {
+        return __classPrivateFieldGet(this, _Typedtext_running, "f");
+    }
     run() {
         return __awaiter(this, void 0, void 0, function* () {
-            this.running = true;
+            __classPrivateFieldSet(this, _Typedtext_running, true, "f");
             let i = 0;
-            while (this.running) {
+            while (__classPrivateFieldGet(this, _Typedtext_running, "f")) {
                 yield this.type(this.content[i]);
                 yield waitForMs(this.delayAfter);
                 yield this.delete();
@@ -89,11 +110,14 @@ class Typedtext {
         });
     }
     stop() {
-        this.running = false;
+        __classPrivateFieldSet(this, _Typedtext_running, false, "f");
     }
     type(content) {
         return __awaiter(this, void 0, void 0, function* () {
             const text = content.text;
+            if (text == "undefined" || text == "") {
+                throw "text has to be defined and cannot be empty";
+            }
             if ("color" in content) {
                 this.elmSent.style.color = content.color;
             }
@@ -108,14 +132,38 @@ class Typedtext {
             }
             for (let i = 0; i < text.length; i++) {
                 if (this.varSpeed) {
-                    let variance = this.varSpeedP / 100;
-                    let randGen = getRandInt(this.delay * (1 - (variance / 2)), this.delay * (1 + variance));
-                    yield waitForMs((randGen < 10) ? 10 : randGen);
+                    yield waitForVarMs(this.delay, this.varSpeedPercentage);
                 }
                 else {
                     yield waitForMs(this.delay);
                 }
-                this.elmSent.append(text[i]);
+                if (this.typos) {
+                    if (Math.random() <= this.typosProb) {
+                        this.elmSent.append(getRandChar());
+                        if (this.varSpeed) {
+                            yield waitForVarMs(this.delay * this.typosDelayMultiplier, this.varSpeedPercentage);
+                        }
+                        else {
+                            yield waitForMs(this.delay * this.typosDelayMultiplier);
+                        }
+                        let currentText = this.elmSent.innerHTML;
+                        let sliced = currentText.slice(0, -1);
+                        this.elmSent.innerHTML = sliced;
+                        if (this.varSpeed) {
+                            yield waitForVarMs(this.delay, this.varSpeedPercentage);
+                        }
+                        else {
+                            yield waitForMs(this.delay);
+                        }
+                        this.elmSent.append(text[i]);
+                    }
+                    else {
+                        this.elmSent.append(text[i]);
+                    }
+                }
+                else {
+                    this.elmSent.append(text[i]);
+                }
             }
             if (!this.staticCursor) {
                 this._startBlink();
@@ -174,13 +222,29 @@ class Typedtext {
         this.elmCurs.style.color = this.cursorColor;
     }
 }
+_Typedtext_running = new WeakMap();
 function waitForMs(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
+}
+function waitForVarMs(ms, variance) {
+    let _var = variance / 100;
+    let randNum = getRandInt(ms * (1 - (_var / 2)), ms * (1 + _var));
+    let msWait = (randNum < 10) ? 10 : randNum;
+    return new Promise(resolve => setTimeout(resolve, msWait));
 }
 function getRandInt(min, max) {
     min = Math.ceil(min);
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+function getRandChar() {
+    let alphabet = "abcdefghijklmnopqrstuvwxyz";
+    if (Math.random() < 0.5) {
+        return alphabet[Math.floor(Math.random() * alphabet.length)].toUpperCase();
+    }
+    else {
+        return alphabet[Math.floor(Math.random() * alphabet.length)];
+    }
 }
 let cssStyle = document.createElement('style');
 cssStyle.innerHTML = "@keyframes blink {0% {opacity: 1;} 40% {opacity: 1;} 60% {opacity: 0;} 100% {opacity: 0;}}";
