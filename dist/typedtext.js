@@ -20,7 +20,7 @@ var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (
     return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
 };
 var _Typedtext_running;
-const typedtextjsVersionId = "0.1.34:122022";
+const typedtextjsVersionId = "0.2.0:122022";
 const defaultOptions = {
     elementSentenceId: "sentence",
     elementCursorId: "cursor",
@@ -239,12 +239,7 @@ function getRandInt(min, max) {
 }
 function getRandChar() {
     let alphabet = "abcdefghijklmnopqrstuvwxyz";
-    if (Math.random() < 0.5) {
-        return alphabet[Math.floor(Math.random() * alphabet.length)].toUpperCase();
-    }
-    else {
-        return alphabet[Math.floor(Math.random() * alphabet.length)];
-    }
+    return alphabet[Math.floor(Math.random() * alphabet.length)];
 }
 let cssStyle = document.createElement('style');
 cssStyle.innerHTML = "@keyframes blink {0% {opacity: 1;} 40% {opacity: 1;} 60% {opacity: 0;} 100% {opacity: 0;}}";

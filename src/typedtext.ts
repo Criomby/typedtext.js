@@ -418,12 +418,7 @@ function getRandInt(min: number, max: number): number {
 // returns a random char, uppercase or lowercase
 function getRandChar(): string {
     let alphabet = "abcdefghijklmnopqrstuvwxyz";
-    if (Math.random() < 0.5) {
-        return alphabet[Math.floor(Math.random() * alphabet.length)].toUpperCase();
-    }
-    else {
-        return alphabet[Math.floor(Math.random() * alphabet.length)];
-    }
+    return alphabet[Math.floor(Math.random() * alphabet.length)];
 }
 
 // define css blink animation globally on site when script is run
