@@ -1,13 +1,4 @@
-/*
-Typedtext.js
-
-JS module for typewriter animations.
-
-Copyright (C) Philippe Braum (www.pbr.plus)
-
-Available under the MIT license
-*/
-
+// UMD
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
     typeof define === 'function' && define.amd ? define('Typedtext', factory) :
@@ -17,8 +8,17 @@ Available under the MIT license
         exports.noConflict = function () { global.Typedtext = current; return exports; };
     }()));
 }(this, (function () {
+    /*
+    Typedtext.js
 
-    const typedtextjsVersionId = "0.2.01:122022";
+    JS module for typewriter animations.
+
+    Copyright (C) Philippe Braum (www.pbr.plus)
+
+    Available under the MIT license
+    */
+
+    const VERSION = "0.2.1:122022";
 
     const defaultOptions = {
         /**
@@ -101,7 +101,7 @@ Available under the MIT license
         varSpeed: false,
 
         /**
-         * @property {number} varSpeedP: 0% - 100% by how much typing speed varies (how much "delay" varies)
+         * @property {number} varSpeedPercentage: 0% - 100% by how much typing speed varies (how much "delay" varies)
          */
         varSpeedPercentage: 0.5,
 
@@ -124,6 +124,11 @@ Available under the MIT license
          * @property {boolean} underline typed text
          */
         underline: false,
+
+        /**
+         * @property {boolean} selectable: target html elements are text selectable / highlightable
+         */
+        selectable: true
     };
 
     // content object prototype
@@ -137,8 +142,8 @@ Available under the MIT license
     };
 
     class Typedtext {
-        readonly elmSent: HTMLSpanElement;
-        readonly elmCurs: HTMLSpanElement;
+        public elmSent: HTMLSpanElement;
+        public elmCurs: HTMLSpanElement;
         readonly cursor: string;
         readonly cursorColor: string;
         readonly textColor: string;
@@ -155,8 +160,10 @@ Available under the MIT license
         readonly typosProb: number;
         readonly typosDelayMultiplier: number;
         readonly underline: boolean;
+        readonly selectable: boolean;
 
         #running: boolean = false; // save object state
+        //#stopped: boolean = false;
 
         constructor(
                 options = {} // optional configurations passed in as dictionary
@@ -200,6 +207,8 @@ Available under the MIT license
             this.typosDelayMultiplier = config.typosDelayMultiplier;
             // always underline text
             this.underline = config.underline;
+            // selectable text field
+            this.selectable = config.selectable;
 
             // set blink animation style
             this.blink = `blink ${config.blinkSpeed}s linear infinite alternate`;
@@ -210,7 +219,7 @@ Available under the MIT license
         }
 
         static getVersion() {
-            return typedtextjsVersionId;
+            return VERSION;
         }
 
         protected isRunning() {
@@ -224,6 +233,8 @@ Available under the MIT license
 
             let i = 0;
             while (this.#running) {
+                //this.#stopped = false;
+
                 await this.type(this.content[i]);
                 await waitForMs(this.delayAfter);
                 await this.delete();
@@ -232,6 +243,9 @@ Available under the MIT license
                 if (i >= this.content.length) {
                     i = 0;
                 }
+
+                // check if stop() is pressed
+                //this.#stopped = true;
             }
         }
 
@@ -348,14 +362,12 @@ Available under the MIT license
         }
 
         private _printConfig(config: typeof defaultOptions) {
-            console.log(`- Typedtext.js ${typedtextjsVersionId} -\n\nconfig:`, config);
+            console.log(`- Typedtext.js ${VERSION} -\n\nconfig:`, config);
         }
 
         protected _setupElements(config: typeof defaultOptions): void {
             if (!this.elmSent || !this.elmCurs) {
-                throw `Typedtext.js: target element(s) not found;
-                    sentence: ${this.elmSent},
-                    cursor: ${this.elmCurs}`;
+                throw "Typedtext.js: target element(s) not found:\nsentence: ${this.elmSent}\ncursor: ${this.elmCurs}";
             }
 
             // sentence element
@@ -370,7 +382,6 @@ Available under the MIT license
 
             // cursor element
             this.elmCurs.style.display = "inline-block";
-            
             //this.elmCurs.style.justifyContent = "center";
             //this.elmCurs.style.alignItems = "center";
             //this.elmCurs.style.width = "2px";
@@ -382,6 +393,12 @@ Available under the MIT license
 
             // set global cursor
             this.elmCurs.innerHTML = this.cursor;
+
+            if (!this.selectable) {
+                // make both elements unselectable
+                this.elmSent.classList.add("unselectable");
+                this.elmCurs.classList.add("unselectable");
+            }
         }
 
         protected _startBlink(): void {
@@ -415,7 +432,7 @@ Available under the MIT license
         let randNum = getRandInt(ms * (1 - (_var / 2) ), ms * (1 + _var));
         // lowest time between keystrokes: 10ms
         let msWait = (randNum < 10) ? 10 : randNum;
-        return new Promise(resolve => setTimeout(resolve, msWait))
+        return new Promise(resolve => setTimeout(resolve, msWait));
     }
 
     // get a random number between min & max, both inclusive
@@ -428,20 +445,20 @@ Available under the MIT license
     // returns a random char, uppercase or lowercase
     function getRandChar(): string {
         let alphabet = "abcdefghijklmnopqrstuvwxyz";
-        if (Math.random() < 0.5) {
-            return alphabet[Math.floor(Math.random() * alphabet.length)].toUpperCase();
-        }
-        else {
-            return alphabet[Math.floor(Math.random() * alphabet.length)];
-        }
+        return alphabet[Math.floor(Math.random() * alphabet.length)];
     }
 
-    // export Typedetxt object
+    // export Typedetext object
     return Typedtext;
 
 })));
 
-// define css blink animation globally on site when script is run
+// add global site css
 let cssStyle = document.createElement('style');
-cssStyle.innerHTML = "@keyframes blink {0% {opacity: 1;} 40% {opacity: 1;} 60% {opacity: 0;} 100% {opacity: 0;}}";
+// define css blink animation 
+let blink = "@keyframes blink {0% {opacity: 1;} 40% {opacity: 1;} 60% {opacity: 0;} 100% {opacity: 0;}} ";
+// define css class "unselectable"
+let unselectable = ".unselectable {-webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;} ";
+cssStyle.innerHTML = blink + unselectable;
+// add css to document head
 document.head.appendChild(cssStyle);
