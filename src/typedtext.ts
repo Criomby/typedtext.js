@@ -8,7 +8,7 @@ Copyright (C) Philippe Braum (www.pbr.plus)
 Available under the MIT license
 */
 
-const typedtextjsVersionId = "0.2.34:122022";
+const typedtextjsVersionId = "0.2.0:122022";
 
 const defaultOptions = {
     /**
