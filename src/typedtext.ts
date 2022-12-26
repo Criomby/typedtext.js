@@ -18,9 +18,11 @@
 
     JS module for typewriter animations.
 
-    Copyright (C) Philippe Braum (www.pbr.plus)
+    Copyright (C) Philippe Braum
 
-    Available under the MIT license
+    www.pbr.plus
+
+    Underscore may be freely distributed under the MIT license.
     */
 
     const VERSION = "0.2.2:122022";
