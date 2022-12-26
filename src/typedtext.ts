@@ -1,11 +1,11 @@
 /*
 Typedtext.js
 
-JS module for typewriter animations.
+JS module for typewriter (text typing) animations.
 
 Copyright (C) Philippe Braum (www.pbr.plus)
 
-Available under the MIT license
+Typedtext.js may be freely distributed under the MIT license.
 */
 
 const typedtextjsVersionId = "0.2.0:122022";
