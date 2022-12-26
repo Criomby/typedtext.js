@@ -29,7 +29,7 @@ var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (
             }()));
 }(this, (function () {
     var _Typedtext_running;
-    const typedtextjsVersionId = "0.2.01:122022";
+    const VERSION = "0.2.1:122022";
     const defaultOptions = {
         elementSentenceId: "sentence",
         elementCursorId: "cursor",
@@ -58,6 +58,7 @@ var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (
         typosProb: 0.1,
         typosDelayMultiplier: 3.5,
         underline: false,
+        selectable: true
     };
     const contentObj = {
         text: "default",
@@ -93,11 +94,12 @@ var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (
             this.typosProb = config.typosProb;
             this.typosDelayMultiplier = config.typosDelayMultiplier;
             this.underline = config.underline;
+            this.selectable = config.selectable;
             this.blink = `blink ${config.blinkSpeed}s linear infinite alternate`;
             this._setupElements(config);
         }
         static getVersion() {
-            return typedtextjsVersionId;
+            return VERSION;
         }
         isRunning() {
             return __classPrivateFieldGet(this, _Typedtext_running, "f");
@@ -201,13 +203,11 @@ var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (
             });
         }
         _printConfig(config) {
-            console.log(`- Typedtext.js ${typedtextjsVersionId} -\n\nconfig:`, config);
+            console.log(`- Typedtext.js ${VERSION} -\n\nconfig:`, config);
         }
         _setupElements(config) {
             if (!this.elmSent || !this.elmCurs) {
-                throw `Typedtext.js: target element(s) not found;
-                    sentence: ${this.elmSent},
-                    cursor: ${this.elmCurs}`;
+                throw "Typedtext.js: target element(s) not found:\nsentence: ${this.elmSent}\ncursor: ${this.elmCurs}";
             }
             this.elmSent.style.display = "inline-block";
             this.elmSent.style.color = config.textColor;
@@ -218,6 +218,10 @@ var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (
             this.elmCurs.style.color = config.cursorColor;
             this.elmCurs.style.animation = this.blink;
             this.elmCurs.innerHTML = this.cursor;
+            if (!this.selectable) {
+                this.elmSent.classList.add("unselectable");
+                this.elmCurs.classList.add("unselectable");
+            }
         }
         _startBlink() {
             this.elmCurs.style.animation = this.blink;
@@ -248,16 +252,13 @@ var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (
     }
     function getRandChar() {
         let alphabet = "abcdefghijklmnopqrstuvwxyz";
-        if (Math.random() < 0.5) {
-            return alphabet[Math.floor(Math.random() * alphabet.length)].toUpperCase();
-        }
-        else {
-            return alphabet[Math.floor(Math.random() * alphabet.length)];
-        }
+        return alphabet[Math.floor(Math.random() * alphabet.length)];
     }
     return Typedtext;
 })));
 let cssStyle = document.createElement('style');
-cssStyle.innerHTML = "@keyframes blink {0% {opacity: 1;} 40% {opacity: 1;} 60% {opacity: 0;} 100% {opacity: 0;}}";
+let blink = "@keyframes blink {0% {opacity: 1;} 40% {opacity: 1;} 60% {opacity: 0;} 100% {opacity: 0;}} ";
+let unselectable = ".unselectable {-webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;} ";
+cssStyle.innerHTML = blink + unselectable;
 document.head.appendChild(cssStyle);
 //# sourceMappingURL=typedtext.js.map

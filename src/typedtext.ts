@@ -1,10 +1,15 @@
 // UMD
 (function (global, factory) {
+    //@ts-ignore
     typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+    //@ts-ignore
     typeof define === 'function' && define.amd ? define('Typedtext', factory) :
     (global = typeof globalThis !== 'undefined' ? globalThis : global || self, (function () {
+        //@ts-ignore
         var current = global.Typedtext;
+        //@ts-ignore
         var exports = global.Typedtext = factory();
+        //@ts-ignore
         exports.noConflict = function () { global.Typedtext = current; return exports; };
     }()));
 }(this, (function () {
@@ -18,7 +23,7 @@
     Available under the MIT license
     */
 
-    const VERSION = "0.2.1:122022";
+    const VERSION = "0.2.2:122022";
 
     const defaultOptions = {
         /**
