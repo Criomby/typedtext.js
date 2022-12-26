@@ -8,7 +8,7 @@ Copyright (C) Philippe Braum (www.pbr.plus)
 Typedtext.js may be freely distributed under the MIT license.
 */
 
-const typedtextjsVersionId = "0.2.0:122022";
+const typedtextjsVersionId = "0.2.1:122022";
 
 const defaultOptions = {
     /**
@@ -116,7 +116,7 @@ const defaultOptions = {
     underline: false,
 
     /**
-     * @property {boolean} selectable: output text fields are selectable / highlightable
+     * @property {boolean} selectable: target html elements are text selectable / highlightable
      */
     selectable: true
 };
@@ -153,6 +153,7 @@ class Typedtext {
     readonly selectable: boolean;
 
     #running: boolean = false; // save object state
+    //#stopped: boolean = false;
 
     constructor(
             options = {} // optional configurations passed in as dictionary
@@ -222,6 +223,8 @@ class Typedtext {
 
         let i = 0;
         while (this.#running) {
+            //this.#stopped = false;
+
             await this.type(this.content[i]);
             await waitForMs(this.delayAfter);
             await this.delete();
@@ -230,6 +233,9 @@ class Typedtext {
             if (i >= this.content.length) {
                 i = 0;
             }
+
+            // check if stop() is pressed
+            //this.#stopped = true;
         }
     }
 

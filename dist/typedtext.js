@@ -20,7 +20,7 @@ var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (
     return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
 };
 var _Typedtext_running;
-const typedtextjsVersionId = "0.2.0:122022";
+const typedtextjsVersionId = "0.2.1:122022";
 const defaultOptions = {
     elementSentenceId: "sentence",
     elementCursorId: "cursor",
