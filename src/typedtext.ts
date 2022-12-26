@@ -91,7 +91,7 @@ const defaultOptions = {
     varSpeed: false,
 
     /**
-     * @property {number} varSpeedP: 0% - 100% by how much typing speed varies (how much "delay" varies)
+     * @property {number} varSpeedPercentage: 0% - 100% by how much typing speed varies (how much "delay" varies)
      */
     varSpeedPercentage: 0.5,
 
@@ -114,6 +114,11 @@ const defaultOptions = {
      * @property {boolean} underline typed text
      */
     underline: false,
+
+    /**
+     * @property {boolean} selectable: output text fields are selectable / highlightable
+     */
+    selectable: true
 };
 
 // content object prototype
@@ -127,8 +132,8 @@ const contentObj = {
 };
 
 class Typedtext {
-    readonly elmSent: HTMLSpanElement;
-    readonly elmCurs: HTMLSpanElement;
+    public elmSent: HTMLSpanElement;
+    public elmCurs: HTMLSpanElement;
     readonly cursor: string;
     readonly cursorColor: string;
     readonly textColor: string;
@@ -145,6 +150,7 @@ class Typedtext {
     readonly typosProb: number;
     readonly typosDelayMultiplier: number;
     readonly underline: boolean;
+    readonly selectable: boolean;
 
     #running: boolean = false; // save object state
 
@@ -190,6 +196,8 @@ class Typedtext {
         this.typosDelayMultiplier = config.typosDelayMultiplier;
         // always underline text
         this.underline = config.underline;
+        // selectable text field
+        this.selectable = config.selectable;
 
         // set blink animation style
         this.blink = `blink ${config.blinkSpeed}s linear infinite alternate`;
@@ -343,9 +351,7 @@ class Typedtext {
 
     protected _setupElements(config: typeof defaultOptions): void {
         if (!this.elmSent || !this.elmCurs) {
-            throw `Typedtext.js: target element(s) not found;
-                sentence: ${this.elmSent},
-                cursor: ${this.elmCurs}`;
+            throw "Typedtext.js: target element(s) not found:\nsentence: ${this.elmSent}\ncursor: ${this.elmCurs}";
         }
 
         // sentence element
@@ -360,7 +366,6 @@ class Typedtext {
 
         // cursor element
         this.elmCurs.style.display = "inline-block";
-        
         //this.elmCurs.style.justifyContent = "center";
         //this.elmCurs.style.alignItems = "center";
         //this.elmCurs.style.width = "2px";
@@ -372,6 +377,12 @@ class Typedtext {
 
         // set global cursor
         this.elmCurs.innerHTML = this.cursor;
+
+        if (!this.selectable) {
+            // make both elements unselectable
+            this.elmSent.classList.add("unselectable");
+            this.elmCurs.classList.add("unselectable");
+        }
     }
 
     protected _startBlink(): void {
@@ -405,7 +416,7 @@ function waitForVarMs(ms: number, variance: number) {
     let randNum = getRandInt(ms * (1 - (_var / 2) ), ms * (1 + _var));
     // lowest time between keystrokes: 10ms
     let msWait = (randNum < 10) ? 10 : randNum;
-    return new Promise(resolve => setTimeout(resolve, msWait))
+    return new Promise(resolve => setTimeout(resolve, msWait));
 }
 
 // get a random number between min & max, both inclusive
@@ -421,7 +432,12 @@ function getRandChar(): string {
     return alphabet[Math.floor(Math.random() * alphabet.length)];
 }
 
-// define css blink animation globally on site when script is run
+// add global site css
 let cssStyle = document.createElement('style');
-cssStyle.innerHTML = "@keyframes blink {0% {opacity: 1;} 40% {opacity: 1;} 60% {opacity: 0;} 100% {opacity: 0;}}";
+// define css blink animation 
+let blink = "@keyframes blink {0% {opacity: 1;} 40% {opacity: 1;} 60% {opacity: 0;} 100% {opacity: 0;}} ";
+// define css class "unselectable"
+let unselectable = ".unselectable {-webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;} ";
+cssStyle.innerHTML = blink + unselectable;
+// add css to document head
 document.head.appendChild(cssStyle);
