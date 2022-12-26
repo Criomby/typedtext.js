@@ -156,7 +156,7 @@
         readonly textColor: string;
         readonly permaBlink: boolean;
         readonly staticCursor: boolean;
-        readonly blink: string;
+        readonly blink: string; // blinkSpeed saved to css style def string
         readonly content: any[];
         readonly delay: number;
         readonly delayAfter: number;
