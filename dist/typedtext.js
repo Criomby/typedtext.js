@@ -47,6 +47,7 @@ const defaultOptions = {
     varSpeedPercentage: 0.5,
     typos: false,
     typosProb: 0.1,
+    typosDelayMultiplier: 3.5,
     underline: false,
 };
 const contentObj = {
@@ -81,6 +82,7 @@ class Typedtext {
         this.varSpeedPercentage = config.varSpeedPercentage;
         this.typos = config.typos;
         this.typosProb = config.typosProb;
+        this.typosDelayMultiplier = config.typosDelayMultiplier;
         this.underline = config.underline;
         this.blink = `blink ${config.blinkSpeed}s linear infinite alternate`;
         this._setupElements(config);
@@ -139,12 +141,14 @@ class Typedtext {
                     if (Math.random() <= this.typosProb) {
                         this.elmSent.append(getRandChar());
                         if (this.varSpeed) {
-                            yield waitForVarMs(this.delay, this.varSpeedPercentage);
+                            yield waitForVarMs(this.delay * this.typosDelayMultiplier, this.varSpeedPercentage);
                         }
                         else {
-                            yield waitForMs(this.delay);
+                            yield waitForMs(this.delay * this.typosDelayMultiplier);
                         }
-                        this.elmSent.innerHTML = this.elmSent.innerHTML.slice(0, -1);
+                        let currentText = this.elmSent.innerHTML;
+                        let sliced = currentText.slice(0, -1);
+                        this.elmSent.innerHTML = sliced;
                         if (this.varSpeed) {
                             yield waitForVarMs(this.delay, this.varSpeedPercentage);
                         }

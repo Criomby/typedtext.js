@@ -8,7 +8,7 @@ Copyright (C) Philippe Braum (www.pbr.plus)
 Available under the MIT license
 */
 
-const typedtextjsVersionId = "0.1.34:122022";
+const typedtextjsVersionId = "0.2.34:122022";
 
 const defaultOptions = {
     /**
@@ -106,6 +106,11 @@ const defaultOptions = {
     typosProb: 0.1,
 
     /**
+     * @property {number} typosDelayMultiplier: How much larger the delay is after the typo has been made and until it gets corected
+     */
+    typosDelayMultiplier: 3.5,
+
+    /**
      * @property {boolean} underline typed text
      */
     underline: false,
@@ -138,6 +143,7 @@ class Typedtext {
     readonly varSpeedPercentage: number;
     readonly typos: boolean;
     readonly typosProb: number;
+    readonly typosDelayMultiplier: number;
     readonly underline: boolean;
 
     #running: boolean = false; // save object state
@@ -181,6 +187,7 @@ class Typedtext {
         // typos feature
         this.typos = config.typos;
         this.typosProb = config.typosProb;
+        this.typosDelayMultiplier = config.typosDelayMultiplier;
         // always underline text
         this.underline = config.underline;
 
@@ -263,16 +270,18 @@ class Typedtext {
                 // check if typo will be made
                 if (Math.random() <= this.typosProb) {
                     // generate typo
-                    this.elmSent.append(getRandChar()); // TODO
-                    // delay
+                    this.elmSent.append(getRandChar());
+                    // increased delay after typo
                     if (this.varSpeed) {
-                        await waitForVarMs(this.delay, this.varSpeedPercentage);
+                        await waitForVarMs(this.delay * this.typosDelayMultiplier, this.varSpeedPercentage);
                     }
                     else {
-                        await waitForMs(this.delay);
+                        await waitForMs(this.delay * this.typosDelayMultiplier);
                     }
                     // delete last inserted char
-                    this.elmSent.innerHTML = this.elmSent.innerHTML.slice(0, -1);
+                    let currentText: string = this.elmSent.innerHTML;
+                    let sliced: string = currentText.slice(0, -1);
+                    this.elmSent.innerHTML = sliced;
                     // delay
                     if (this.varSpeed) {
                         await waitForVarMs(this.delay, this.varSpeedPercentage);
