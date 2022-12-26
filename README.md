@@ -1,5 +1,5 @@
 <div align="center">
-    <img src="https://user-images.githubusercontent.com/86114549/208748667-f39546eb-fcac-4121-a9b9-6de99688f498.gif" alt="typedtextjs_animation" width="700px">
+    <img src="https://user-images.githubusercontent.com/86114549/209543520-834f6b64-246f-4768-b74d-280520c53dc9.gif" alt="typedtextjs_animation" width="700px">
     <h1>A JS library for typing animations.</h1>
 </div>
 
