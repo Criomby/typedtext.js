@@ -13,6 +13,12 @@
 
 <br>
 
+## Live Demo
+
+For a production demo see my website: <a href="https://pbr.plus"><b>www.pbr.plus</b></a>
+
+<br>
+
 ## Getting started is as easy as:
 ```javascript
 // in your *.js file
@@ -32,7 +38,6 @@ new Typedtext({
 
 ![TypedtextJS_basic_demo](https://user-images.githubusercontent.com/86114549/208748750-23fa6227-e90a-4fdb-b9f3-feb298fc4e92.gif)
 
-<hr>
 <br>
 
 ## Integration
@@ -44,7 +49,6 @@ In your .html file:
 <script src="typedtext.js"></script>
 ```
 
-<hr>
 <br>
 
 # Documentation
@@ -293,9 +297,3 @@ var ucctt = new Typedtext({
     selectable: true
 }
 ```
-<hr>
-<br>
-
-## Live Demo
-
-For a production demo see my website: <a href="https://pbr.plus">www.pbr.plus</a>
