@@ -40,6 +40,12 @@ new Typedtext({
 
 <br>
 
+### This is also Typedtext.js:
+![typedtextjs_handwriting_demo](https://user-images.githubusercontent.com/86114549/209695401-cd4d9702-38cc-4ed7-9826-0ffcf9140cf1.gif)
+
+<br>
+<br>
+
 ## Integration
 ### Download the latest Typedtext.js file from the Releases section here: https://github.com/Criomby/typedtext.js/releases
 <br>
