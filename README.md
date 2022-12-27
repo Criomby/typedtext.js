@@ -20,6 +20,7 @@ For a production demo see my website: <a href="https://pbr.plus"><b>www.pbr.plus
 <br>
 
 ## Getting started is as easy as:
+
 ```javascript
 // in your *.js file
 new Typedtext({
@@ -40,14 +41,17 @@ new Typedtext({
 
 <br>
 
-### This is also Typedtext.js:
+### This is also Typedtext.js: 
+
 ![typedtextjs_handwriting_demo](https://user-images.githubusercontent.com/86114549/209695401-cd4d9702-38cc-4ed7-9826-0ffcf9140cf1.gif)
 
 <br>
 <br>
 
 ## Integration
+
 ### Download the latest Typedtext.js file from the Releases section here: https://github.com/Criomby/typedtext.js/releases
+
 <br>
 In your .html file:
 
@@ -62,6 +66,7 @@ In your .html file:
 ## "How-to" Examples
 
 ### :white_small_square: basic setup
+
 Basic custom configuration setup example
 ```javascript
 new Typedtext({
@@ -75,6 +80,7 @@ new Typedtext({
 <br>
 
 ### :white_small_square: manual start/stop
+
 Start / stop the animation *loop* manually (e.g. using a button click event)
 ```javascript
 var tt1 = new Typedtext({
@@ -96,6 +102,7 @@ tt1.stop();
 <br>
 
 ### :white_small_square: type, delete (one time)
+
 Type / delete content just once
 ```javascript
 // config
@@ -128,6 +135,7 @@ tt2.type({
 <br>
 
 ### :white_small_square: Get object status
+
 See if animation is running currently on an object
 ```javascript
 var running = tt1.isRunning(); // returns boolean value
@@ -136,6 +144,7 @@ var running = tt1.isRunning(); // returns boolean value
 <br><br>
 
 ### :white_small_square: configure all possible <a href="https://github.com/Criomby/typedtext.js/edit/main/README.md#config-options-docu">options</a>
+
 Create your ultimate custom config
 ```javascript
 // Ultimate Custom Config of Typedtext (ucctt)
@@ -189,6 +198,7 @@ var ucctt = new Typedtext({
 <br>
 
 ## Config Options Docu:
+
 (The values seen here are the default values if not overwritten by user config)
 
 ```javascript
