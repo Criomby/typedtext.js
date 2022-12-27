@@ -7,7 +7,7 @@
 
 ### :heavy_check_mark: Highly customizable
 
-### :heavy_check_mark: Lightweight (4kb min)
+### :heavy_check_mark: Lightweight (6kb min)
 
 ### :heavy_check_mark: Dependency-free
 
@@ -110,9 +110,20 @@ tt2.delete();
 tt2.type({
     text: "New text typed."
 });
-// ... tt2.delete(); // you get the idea
+
+// ... 
+// tt2.delete(); 
+// you get the idea
 ```
 <br>
+
+### :white_small_square: Get object status
+See if animation is running currently on an object
+```javascript
+var running = tt1.isRunning(); // returns boolean value
+```
+```running``` is either `**true** or **false** depending on whether .run() has been called yet (or has been stopped w/ .stop())<br>
+<br><br>
 
 ### :white_small_square: configure all possible <a href="https://github.com/Criomby/typedtext.js/edit/main/README.md#config-options-docu">options</a>
 Create your ultimate custom config
@@ -136,7 +147,7 @@ var ucctt = new Typedtext({
             timeout: 2000
         },
         {
-            text: "Once more...",
+            text: "Keep it running...",
             color: "black",
             cursor: "X",
             cursorColor: "#82AAE3",
@@ -155,12 +166,15 @@ var ucctt = new Typedtext({
     deleteSpeed: 50,
     printConfig: true,
     varSpeed: true,
-    varSpeedP: 60,
-    underline: false
-})
+    varSpeedPercentage: 0.6,
+    typos: true,
+    typosProb: 0.15,
+    typosDelayMultiplier: 4,
+    underline: false,
+    selectable: false
+});
 
-// ucctt.run()
-// ( ucctt.stop() )
+// ucctt.run();
 ```
 <br>
 
@@ -249,17 +263,39 @@ var ucctt = new Typedtext({
     varSpeed: false,
 
     /**
-     * @property {number} varSpeedP: 0% - 100% by how much typing speed varies (how much "delay" varies)
+     * @property {number} varSpeedPercentage: 0% - 100% by how much typing speed varies (how much "delay" varies)
      */
-    varSpeedP: 50,
+    varSpeedPercentage: 0.5,
+
+    /**
+     * @property {boolean} typos: makes typos while typing as per the defined probability
+     */
+    typos: false,
+
+    /**
+     * @property {number} typosProb: Probability in percent for a typo per char
+     */
+    typosProb: 0.1,
+
+    /**
+     * @property {number} typosDelayMultiplier: How much larger the delay is after the typo has been made and until it gets corected
+     */
+    typosDelayMultiplier: 3.5,
 
     /**
      * @property {boolean} underline typed text
      */
     underline: false,
+
+    /**
+     * @property {boolean} selectable: target html elements are text selectable / highlightable
+     */
+    selectable: true
 }
 ```
 <hr>
 <br>
 
-Contact me: <a href="https://pbr.plus">www.pbr.plus</a>
+## Live Demo
+
+For a production demo see my website: <a href="https://pbr.plus">www.pbr.plus</a>
